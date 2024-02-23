@@ -1,4 +1,4 @@
-﻿namespace ObjectOrientedDesignProject
+﻿namespace ObjectOrientedDesign
 {
     internal class Program
     {

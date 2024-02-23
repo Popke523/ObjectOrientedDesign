@@ -1,13 +1,13 @@
-﻿namespace ObjectOrientedDesignProject
+﻿namespace ObjectOrientedDesign
 {
-    internal class Crew
+    public class Crew
     {
         int ID;
         string Name;
-        UInt64 Age;
+        ulong Age;
         string Phone;
         string Email;
-        UInt16 Practice;
+        ushort Practice;
         string Role;
     }
 }

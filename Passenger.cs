@@ -1,13 +1,13 @@
-﻿namespace ObjectOrientedDesignProject
+﻿namespace ObjectOrientedDesign
 {
-    internal class Passenger
+    public class Passenger
     {
-        UInt64 ID;
+        ulong ID;
         string Name;
-        UInt64 Age;
+        ulong Age;
         string Phone;
         string Email;
         string Class;
-        UInt64 Miles;
+        ulong Miles;
     }
 }
