@@ -1,10 +1,35 @@
-﻿namespace ObjectOrientedDesign
+﻿using System.Globalization;
+
+namespace ObjectOrientedDesign
 {
-    public class Cargo
+    public class Cargo : IImport
     {
-        ulong ID;
-        float Weight;
-        string Code;
-        string Description;
+        public ulong ID { get; set; }
+        public float Weight { get; set; }
+        public string Code { get; set; }
+        public string Description { get; set; }
+
+        public Cargo(ulong id, float weight, string code, string description)
+        {
+            ID = id;
+            Weight = weight;
+            Code = code;
+            Description = description;
+        }
+    }
+
+    public class CargoFactory : IFactory
+    {
+        public IImport CreateFromString(string s)
+        {
+            NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
+            string[] split = s.Split(',');
+            return new Cargo(
+                ulong.Parse(split[1], nfi),
+                float.Parse(split[2], nfi),
+                split[3],
+                split[4]
+            );
+        }
     }
 }
