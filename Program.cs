@@ -6,9 +6,27 @@ namespace ObjectOrientedDesign
     {
         static void Main(string[] args)
         {
-            List<IImport> imported = new List<IImport>();
+            string ftrInputFileName;
+            string jsonOutputFileName;
+            switch (args.Length)
+            {
+                case 2:
+                    ftrInputFileName = args[0];
+                    jsonOutputFileName = args[1];
+                    break;
+                case 1:
+                    ftrInputFileName = args[0];
+                    jsonOutputFileName = "example_data.json";
+                    break;
+                default:
+                    ftrInputFileName = "example_data.ftr";
+                    jsonOutputFileName = "example_data.json";
+                    break;
+            }
 
-            Dictionary<string, IFactory> keyValuePairs = new Dictionary<string, IFactory>() {
+            List<FlightSystemObject> imported = new List<FlightSystemObject>();
+
+            Dictionary<string, IFactory> factories = new Dictionary<string, IFactory>() {
                 {"C", new CrewFactory() },
                 {"P", new PassengerFactory() },
                 {"CA", new CargoFactory() },
@@ -18,19 +36,18 @@ namespace ObjectOrientedDesign
                 {"FL", new FlightFactory() }
             };
 
-            using (StreamReader sr = new StreamReader("example_data.ftr"))
+            using (StreamReader sr = new StreamReader(ftrInputFileName))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     string[] split = line.Split(',');
-                    imported.Add(keyValuePairs[split[0]].CreateFromString(line));
+                    imported.Add(factories[split[0]].CreateFromString(line));
                 }
             }
 
-            string fileName = "serialized.json";
             string jsonString = JsonSerializer.Serialize(imported);
-            File.WriteAllText(fileName, jsonString);
+            File.WriteAllText(jsonOutputFileName, jsonString);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ObjectOrientedDesign
 {
-    public class Crew : IImport
+    public class Crew : FlightSystemObject
     {
         public ulong ID { get; set; }
         public string Name { get; set; }
@@ -26,8 +26,9 @@ namespace ObjectOrientedDesign
 
     public class CrewFactory : IFactory
     {
-        public IImport CreateFromString(string s)
+        public FlightSystemObject CreateFromString(string s)
         {
+            // force invariant number format to parse correctly numbers with dot as the decimal separator
             NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
             string[] split = s.Split(',');
             return new Crew(

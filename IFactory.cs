@@ -2,6 +2,6 @@
 {
     public interface IFactory
     {
-        public IImport CreateFromString(string s);
+        public FlightSystemObject CreateFromString(string s);
     }
 }

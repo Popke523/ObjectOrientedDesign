@@ -9,7 +9,7 @@ namespace ObjectOrientedDesign
     [JsonDerivedType(typeof(Flight), "FL")]
     [JsonDerivedType(typeof(Passenger), "P")]
     [JsonDerivedType(typeof(PassengerPlane), "PP")]
-    public interface IImport
+    public abstract class FlightSystemObject
     {
 
     }

@@ -2,7 +2,7 @@
 
 namespace ObjectOrientedDesign
 {
-    public class Cargo : IImport
+    public class Cargo : FlightSystemObject
     {
         public ulong ID { get; set; }
         public float Weight { get; set; }
@@ -20,8 +20,9 @@ namespace ObjectOrientedDesign
 
     public class CargoFactory : IFactory
     {
-        public IImport CreateFromString(string s)
+        public FlightSystemObject CreateFromString(string s)
         {
+            // force invariant number format to parse correctly numbers with dot as the decimal separator
             NumberFormatInfo nfi = NumberFormatInfo.InvariantInfo;
             string[] split = s.Split(',');
             return new Cargo(
