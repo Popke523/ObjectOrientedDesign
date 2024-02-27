@@ -6,6 +6,7 @@ namespace ObjectOrientedDesign
     {
         static void Main(string[] args)
         {
+            // Read filenames from arguments or use defaults
             string ftrInputFileName;
             string jsonOutputFileName;
             switch (args.Length)
@@ -24,8 +25,10 @@ namespace ObjectOrientedDesign
                     break;
             }
 
+            // List of imported objects to serialize later
             List<FlightSystemObject> imported = new List<FlightSystemObject>();
 
+            // Dictionary used to select correct factory based on first 1 or 2 letters of each line of the input file
             Dictionary<string, IFactory> factories = new Dictionary<string, IFactory>() {
                 {"C", new CrewFactory() },
                 {"P", new PassengerFactory() },
@@ -36,6 +39,7 @@ namespace ObjectOrientedDesign
                 {"FL", new FlightFactory() }
             };
 
+            // Parse ftr file line by line and add objects to the list
             using (StreamReader sr = new StreamReader(ftrInputFileName))
             {
                 string line;
@@ -46,6 +50,7 @@ namespace ObjectOrientedDesign
                 }
             }
 
+            // Serialize to JSON
             string jsonString = JsonSerializer.Serialize(imported);
             File.WriteAllText(jsonOutputFileName, jsonString);
         }
