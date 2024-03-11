@@ -1,4 +1,6 @@
-﻿namespace ObjectOrientedDesign.FlightSystem.Factory;
+﻿using ObjectOrientedDesign.FlightSystem.Object;
+
+namespace ObjectOrientedDesign.FlightSystem.Factory;
 
 public interface IFactory
 {
