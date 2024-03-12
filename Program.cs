@@ -8,19 +8,35 @@ internal class Program
     {
         // Read filenames from arguments or use defaults
         string ftrInputFileName;
+        int minOffsetInMs;
+        int maxOffsetInMs;
         switch (args.Length)
         {
+            case 3:
+                ftrInputFileName = args[0];
+                minOffsetInMs = int.Parse(args[1]);
+                maxOffsetInMs = int.Parse(args[2]);
+                break;
+            case 2:
+                ftrInputFileName = args[0];
+                minOffsetInMs = int.Parse(args[1]);
+                maxOffsetInMs = 200;
+                break;
             case 1:
                 ftrInputFileName = args[0];
+                minOffsetInMs = 100;
+                maxOffsetInMs = 200;
                 break;
             default:
                 ftrInputFileName = "data/example_data.ftr";
+                minOffsetInMs = 100;
+                maxOffsetInMs = 200;
                 break;
         }
 
         var fs = new FlightSystem.FlightSystem();
 
-        var nss = new NetworkSourceSimulator.NetworkSourceSimulator(ftrInputFileName, 100, 200);
+        var nss = new NetworkSourceSimulator.NetworkSourceSimulator(ftrInputFileName, minOffsetInMs, maxOffsetInMs);
 
         nss.OnNewDataReady += fs.OnNewDataReady;
 

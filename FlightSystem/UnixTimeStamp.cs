@@ -6,8 +6,7 @@ public class UnixTimeStamp
     public static DateTime ToDateTime(long unixTimeStamp)
     {
         // Unix timestamp is seconds past epoch
-        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimeStamp);
-        return dateTime;
+        var dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeStamp);
+        return dateTimeOffset.UtcDateTime;
     }
 }
