@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using NetworkSourceSimulator;
 
 namespace ObjectOrientedDesign.FlightSystem.Object;
@@ -41,9 +42,9 @@ public class CargoPlane : FlightSystemObject
 
         return new CargoPlane(
             BitConverter.ToUInt64(message.MessageBytes, 7),
-            BitConverter.ToString(message.MessageBytes, 15, 10),
-            BitConverter.ToString(message.MessageBytes, 25, 3),
-            BitConverter.ToString(message.MessageBytes, 30, modelLength),
+            Encoding.ASCII.GetString(message.MessageBytes, 15, 10).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 25, 3).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 30, modelLength).TrimEnd('\0'),
             BitConverter.ToSingle(message.MessageBytes, 30 + modelLength)
         );
     }

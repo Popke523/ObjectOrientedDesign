@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using NetworkSourceSimulator;
 
 namespace ObjectOrientedDesign.FlightSystem.Object;
@@ -48,12 +49,12 @@ public class Airport : FlightSystemObject
 
         return new Airport(
             BitConverter.ToUInt64(message.MessageBytes, 7),
-            BitConverter.ToString(message.MessageBytes, 17, nameLength).TrimEnd((char)0),
-            BitConverter.ToString(message.MessageBytes, 17, 3),
+            Encoding.ASCII.GetString(message.MessageBytes, 17, nameLength).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 17, 3).TrimEnd('\0'),
             BitConverter.ToSingle(message.MessageBytes, 20 + nameLength),
             BitConverter.ToSingle(message.MessageBytes, 24 + nameLength),
             BitConverter.ToSingle(message.MessageBytes, 28 + nameLength),
-            BitConverter.ToString(message.MessageBytes, 32 + nameLength, 3)
+            Encoding.ASCII.GetString(message.MessageBytes, 32 + nameLength, 3).TrimEnd('\0')
         );
     }
 }

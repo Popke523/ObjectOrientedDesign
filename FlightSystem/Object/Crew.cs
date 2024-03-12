@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using NetworkSourceSimulator;
 
 namespace ObjectOrientedDesign.FlightSystem.Object;
@@ -49,12 +50,12 @@ public class Crew : FlightSystemObject
 
         return new Crew(
             BitConverter.ToUInt64(message.MessageBytes, 7),
-            BitConverter.ToString(message.MessageBytes, 15, nameLength),
+            Encoding.ASCII.GetString(message.MessageBytes, 17, nameLength).TrimEnd('\0'),
             BitConverter.ToUInt16(message.MessageBytes, 17 + nameLength),
-            BitConverter.ToString(message.MessageBytes, 19 + nameLength, 12),
-            BitConverter.ToString(message.MessageBytes, 31 + nameLength, emailLength),
+            Encoding.ASCII.GetString(message.MessageBytes, 19 + nameLength, 12).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 33 + nameLength, emailLength).TrimEnd('\0'),
             BitConverter.ToUInt16(message.MessageBytes, 33 + nameLength + emailLength),
-            BitConverter.ToString(message.MessageBytes, 35 + nameLength + emailLength, 1)
+            Encoding.ASCII.GetString(message.MessageBytes, 35 + nameLength + emailLength, 1).TrimEnd('\0')
         );
     }
 }

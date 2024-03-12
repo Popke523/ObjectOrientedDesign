@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using NetworkSourceSimulator;
 
 namespace ObjectOrientedDesign.FlightSystem.Object;
@@ -47,12 +48,12 @@ public class Passenger : FlightSystemObject
         var emailLength = BitConverter.ToUInt16(message.MessageBytes, 31 + nameLength);
 
         return new Passenger(
-            BitConverter.ToUInt16(message.MessageBytes, 7),
-            BitConverter.ToString(message.MessageBytes, 17, nameLength),
+            BitConverter.ToUInt64(message.MessageBytes, 7),
+            Encoding.ASCII.GetString(message.MessageBytes, 17, nameLength).TrimEnd('\0'),
             BitConverter.ToUInt16(message.MessageBytes, 17 + nameLength),
-            BitConverter.ToString(message.MessageBytes, 19 + nameLength, 12),
-            BitConverter.ToString(message.MessageBytes, 33 + nameLength, emailLength),
-            BitConverter.ToString(message.MessageBytes, 33 + nameLength + emailLength, 1),
+            Encoding.ASCII.GetString(message.MessageBytes, 19 + nameLength, 12).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 33 + nameLength, emailLength).TrimEnd('\0'),
+            Encoding.ASCII.GetString(message.MessageBytes, 33 + nameLength + emailLength, 1).TrimEnd('\0'),
             BitConverter.ToUInt64(message.MessageBytes, 34 + nameLength + emailLength)
         );
     }
