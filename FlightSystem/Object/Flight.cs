@@ -34,7 +34,6 @@ public class Flight : FlightSystemObject
     public ulong[] Crew { get; set; }
     public ulong[] Load { get; set; }
 
-
     public static Flight CreateFromString(string s)
     {
         // force invariant number format to parse correctly numbers with dot as the decimal separator

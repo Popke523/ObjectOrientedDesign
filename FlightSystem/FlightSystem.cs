@@ -7,6 +7,7 @@ namespace ObjectOrientedDesign.FlightSystem;
 
 public class FlightSystem
 {
+    public readonly object FsLock = new();
     public readonly Dictionary<string, Action<Message>> MessageCodeToFunction;
     public readonly Dictionary<string, Action<string>> StringCodeToFunction;
 
@@ -17,7 +18,6 @@ public class FlightSystem
     [JsonInclude] public List<Flight> Flights;
     [JsonInclude] public List<PassengerPlane> PassengerPlanes;
     [JsonInclude] public List<Passenger> Passengers;
-
 
     public FlightSystem()
     {
@@ -68,7 +68,10 @@ public class FlightSystem
     public void AddFromNetworkSourceMessage(Message message)
     {
         var objectCode = Encoding.ASCII.GetString(message.MessageBytes, 0, 3);
-        MessageCodeToFunction[objectCode](message);
+        lock (FsLock)
+        {
+            MessageCodeToFunction[objectCode](message);
+        }
     }
 
     public void OnNewDataReady(object sender, NewDataReadyArgs args)

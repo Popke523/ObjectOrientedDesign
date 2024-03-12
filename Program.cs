@@ -32,7 +32,12 @@ internal class Program
             switch (Console.ReadLine())
             {
                 case "print":
-                    var jsonString = JsonSerializer.Serialize(fs);
+                    string jsonString;
+                    lock (fs.FsLock)
+                    {
+                        jsonString = JsonSerializer.Serialize(fs);
+                    }
+
                     var currentTime = DateTime.Now;
                     File.WriteAllText($"snapshot_{currentTime:HH_mm_ss}.json", jsonString);
                     break;
