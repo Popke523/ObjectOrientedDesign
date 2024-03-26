@@ -17,10 +17,15 @@
         <None Update="data\example_data.ftr">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.7"/>
         <PackageReference Include="FlightTrackerGUI" Version="1.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0"/>
     </ItemGroup>
 
 </Project>

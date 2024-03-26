@@ -1,84 +1,77 @@
-using System.Text;
 using System.Text.Json.Serialization;
+using Mapsui.Projections;
 using NetworkSourceSimulator;
 using ObjectOrientedDesign.FlightSystem.Object;
+using ObjectOrientedDesign.FlightSystem.Reader;
 
 namespace ObjectOrientedDesign.FlightSystem;
 
 public class FlightSystem
 {
     public readonly object FsLock = new();
-    public readonly Dictionary<string, Action<Message>> MessageCodeToFunction;
-    public readonly Dictionary<string, Action<string>> StringCodeToFunction;
 
-    [JsonInclude] public List<Airport> Airports;
-    [JsonInclude] public List<Cargo> Cargoes;
-    [JsonInclude] public List<CargoPlane> CargoPlanes;
-    [JsonInclude] public List<Crew> Crew;
-    [JsonInclude] public List<Flight> Flights;
-    [JsonInclude] public List<PassengerPlane> PassengerPlanes;
-    [JsonInclude] public List<Passenger> Passengers;
-
-    public FlightSystem()
-    {
-        Airports = [];
-        Cargoes = [];
-        CargoPlanes = [];
-        Crew = [];
-        Flights = [];
-        PassengerPlanes = [];
-        Passengers = [];
-
-        StringCodeToFunction = new Dictionary<string, Action<string>>
-        {
-            { "C", s => Crew.Add(Object.Crew.CreateFromString(s)) },
-            { "P", s => Passengers.Add(Passenger.CreateFromString(s)) },
-            { "CA", s => Cargoes.Add(Cargo.CreateFromString(s)) },
-            { "CP", s => CargoPlanes.Add(CargoPlane.CreateFromString(s)) },
-            { "PP", s => PassengerPlanes.Add(PassengerPlane.CreateFromString(s)) },
-            { "AI", s => Airports.Add(Airport.CreateFromString(s)) },
-            { "FL", s => Flights.Add(Flight.CreateFromString(s)) }
-        };
-
-        MessageCodeToFunction = new Dictionary<string, Action<Message>>
-        {
-            { "NCR", message => Crew.Add(Object.Crew.CreateFromMessage(message)) },
-            { "NPA", message => Passengers.Add(Passenger.CreateFromMessage(message)) },
-            { "NCA", message => Cargoes.Add(Cargo.CreateFromMessage(message)) },
-            { "NCP", message => CargoPlanes.Add(CargoPlane.CreateFromMessage(message)) },
-            { "NPP", message => PassengerPlanes.Add(PassengerPlane.CreateFromMessage(message)) },
-            { "NAI", message => Airports.Add(Airport.CreateFromMessage(message)) },
-            { "NFL", message => Flights.Add(Flight.CreateFromMessage(message)) }
-        };
-    }
-
-    public FlightSystem(string filename) : this()
-    {
-        using var sr = new StreamReader(filename);
-        string? line;
-        while ((line = sr.ReadLine()) != null) AddFromFtrString(line);
-    }
-
-    public void AddFromFtrString(string s)
-    {
-        var split = s.Split(',');
-        StringCodeToFunction[split[0]](s);
-    }
-
-    public void AddFromNetworkSourceMessage(Message message)
-    {
-        var objectCode = Encoding.ASCII.GetString(message.MessageBytes, 0, 3);
-        lock (FsLock)
-        {
-            MessageCodeToFunction[objectCode](message);
-        }
-    }
+    [JsonInclude] public List<Airport> Airports = [];
+    [JsonInclude] public List<Cargo> Cargoes = [];
+    [JsonInclude] public List<CargoPlane> CargoPlanes = [];
+    [JsonInclude] public List<Crew> Crew = [];
+    [JsonInclude] public List<Flight> Flights = [];
+    [JsonInclude] public List<PassengerPlane> PassengerPlanes = [];
+    [JsonInclude] public List<Passenger> Passengers = [];
 
     public void OnNewDataReady(object sender, NewDataReadyArgs args)
     {
-        Console.WriteLine("Received a message");
         var nss = (NetworkSourceSimulator.NetworkSourceSimulator)sender;
         var message = nss.GetMessageAt(args.MessageIndex);
-        AddFromNetworkSourceMessage(message);
+        NetworkSourceMessageReader.AddToFlightSystem(message, this);
+    }
+
+    public void UpdateFlightPositions()
+    {
+        // NOTE: This makes a linear interpolation on the Mercator projection.
+        // This is not the shortest path between two points on Earth.
+        var currentTime = TimeOnly.FromDateTime(DateTime.Now);
+        lock (FsLock)
+        {
+            foreach (var flight in Flights)
+            {
+                var origin = Airports.Find(x => x.Id == flight.OriginId);
+                var target = Airports.Find(x => x.Id == flight.TargetId);
+
+                var currentMercatorCoords =
+                    SphericalMercator.FromLonLat(flight.Longitude, flight.Latitude);
+                var originMercatorCoords =
+                    SphericalMercator.FromLonLat(origin!.Longitude, origin.Latitude);
+                var targetMercatorCoords =
+                    SphericalMercator.FromLonLat(target!.Longitude, target.Latitude);
+
+                var takeoffTimeMs = TimeOnly.FromDateTime(flight.TakeoffTime).ToTimeSpan().TotalMilliseconds;
+                var landingTimeMs = TimeOnly.FromDateTime(flight.LandingTime).ToTimeSpan().TotalMilliseconds;
+                var currentTimeMs = currentTime.ToTimeSpan().TotalMilliseconds;
+
+                if (takeoffTimeMs > landingTimeMs)
+                {
+                    if (currentTimeMs < landingTimeMs) currentTimeMs += 86400000;
+                    landingTimeMs += 86400000;
+                }
+
+                if (!(takeoffTimeMs < currentTimeMs) || !(currentTimeMs < landingTimeMs)) continue;
+
+                var timeDiffMs = landingTimeMs - takeoffTimeMs;
+                (double x, double y) distance = (targetMercatorCoords.x - originMercatorCoords.x,
+                    targetMercatorCoords.y - originMercatorCoords.y);
+                var elapsedTime = currentTimeMs - takeoffTimeMs;
+
+                (double x, double y) newMercatorCoords = (
+                    elapsedTime / timeDiffMs * distance.x + originMercatorCoords.x,
+                    elapsedTime / timeDiffMs * distance.y + originMercatorCoords.y);
+
+                var position = SphericalMercator.ToLonLat(newMercatorCoords.x, newMercatorCoords.y);
+
+                flight.Angle = Math.Atan2(newMercatorCoords.x - currentMercatorCoords.x,
+                    newMercatorCoords.y - currentMercatorCoords.y);
+                flight.Latitude = (float)position.lat;
+                flight.Longitude = (float)position.lon;
+            }
+        }
     }
 }

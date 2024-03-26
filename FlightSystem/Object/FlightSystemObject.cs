@@ -1,5 +1,3 @@
 ﻿namespace ObjectOrientedDesign.FlightSystem.Object;
 
-public abstract class FlightSystemObject
-{
-}
+public abstract class FlightSystemObject;
