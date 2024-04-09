@@ -4,20 +4,24 @@ namespace ObjectOrientedDesign.FlightSystem.News;
 
 public class NewsGenerator
 {
-    public List<Medium> Media;
-    public List<IReportable> Reportables;
-    public IEnumerator<string?> StringEnumerator;
+    private readonly IEnumerator<(Medium medium, IReportable reportable)> _pairEnumerator;
 
-    public NewsGenerator(List<Medium> media, List<IReportable> reportables)
+    public NewsGenerator(IEnumerable<Medium> media, IEnumerable<IReportable> reportables)
     {
-        Media = media;
-        Reportables = reportables;
-        StringEnumerator = NewsIterator.AllNews(this).GetEnumerator();
+        _pairEnumerator =
+            media.SelectMany<Medium, IReportable, (Medium, IReportable)>(_ => reportables,
+                (medium, reportable) => (medium, reportable)).GetEnumerator();
+    }
+
+    ~NewsGenerator()
+    {
+        _pairEnumerator.Dispose();
     }
 
     public string? GenerateNextNews()
     {
-        if (!StringEnumerator.MoveNext()) return null;
-        return StringEnumerator.Current;
+        if (!_pairEnumerator.MoveNext()) return null;
+        var current = _pairEnumerator.Current;
+        return current.reportable.Report(current.medium);
     }
 }
