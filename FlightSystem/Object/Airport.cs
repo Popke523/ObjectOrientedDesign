@@ -1,7 +1,10 @@
-﻿namespace ObjectOrientedDesign.FlightSystem.Object;
+﻿using ObjectOrientedDesign.FlightSystem.News;
+using ObjectOrientedDesign.FlightSystem.News.Media;
+
+namespace ObjectOrientedDesign.FlightSystem.Object;
 
 public class Airport(ulong id, string name, string code, float longitude, float latitude, float amsl, string country)
-    : FlightSystemObject
+    : FlightSystemObject, IReportable
 {
     public ulong Id { get; set; } = id;
     public string Name { get; set; } = name;
@@ -10,4 +13,10 @@ public class Airport(ulong id, string name, string code, float longitude, float 
     public float Latitude { get; set; } = latitude;
     public float Amsl { get; set; } = amsl;
     public string Country { get; set; } = country;
+
+
+    public string Report(Medium m)
+    {
+        return m.Report(this);
+    }
 }

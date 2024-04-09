@@ -1,4 +1,7 @@
-﻿namespace ObjectOrientedDesign.FlightSystem.Object;
+﻿using ObjectOrientedDesign.FlightSystem.News;
+using ObjectOrientedDesign.FlightSystem.News.Media;
+
+namespace ObjectOrientedDesign.FlightSystem.Object;
 
 public class PassengerPlane(
     ulong id,
@@ -8,7 +11,7 @@ public class PassengerPlane(
     ushort firstClassSize,
     ushort businessClassSize,
     ushort economyClassSize)
-    : FlightSystemObject
+    : FlightSystemObject, IReportable
 {
     public ulong Id { get; set; } = id;
     public string Serial { get; set; } = serial;
@@ -17,4 +20,9 @@ public class PassengerPlane(
     public ushort FirstClassSize { get; set; } = firstClassSize;
     public ushort BusinessClassSize { get; set; } = businessClassSize;
     public ushort EconomyClassSize { get; set; } = economyClassSize;
+
+    public string Report(Medium m)
+    {
+        return m.Report(this);
+    }
 }
