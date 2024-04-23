@@ -1,3 +1,6 @@
 ﻿namespace ObjectOrientedDesign.FlightSystem.Object;
 
-public abstract class FlightSystemObject;
+public class FlightSystemObject(ulong id)
+{
+    public ulong Id { get; set; } = id;
+}
