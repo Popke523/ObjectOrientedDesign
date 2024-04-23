@@ -1,7 +1,6 @@
 using System.Text;
 using NetworkSourceSimulator;
 using ObjectOrientedDesign.FlightSystem.Factory;
-using ObjectOrientedDesign.FlightSystem.Object;
 
 namespace ObjectOrientedDesign.FlightSystem.Reader;
 
@@ -103,13 +102,13 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
 
     public void UpdatePosition(FlightSystem flightSystem, ulong objectId, float latitude, float longitude)
     {
-        var flight = flightSystem.Flights.FirstOrDefault(x=> x!.Id == objectId, null);
+        var flight = flightSystem.Flights.FirstOrDefault(x => x!.Id == objectId, null);
         if (flight is null)
         {
             _logger.Log($"Flight with id ${objectId} does not exist in the flight system!");
             return;
         }
-        
+
         flight.Latitude = latitude;
         flight.Longitude = longitude;
         _logger.Log($"Position of flight with id ${objectId} updated to ({latitude}, {longitude})");

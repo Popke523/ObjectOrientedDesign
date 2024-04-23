@@ -22,7 +22,8 @@ internal class Program
         var ftrInputFileName = section["FTRInputFileName"] ?? "data/example_data.ftr";
         var ftreInputFileName = section["FTREInputFileName"] ?? "data/example.ftre";
 
-        
+        logger.Log("Starting...");
+
         switch (section["Mode"])
         {
             case "ReadFromFTRFile":
@@ -50,7 +51,7 @@ internal class Program
                 Task.Run(cli.Run);
                 break;
             }
-            
+
             case "FTRE":
             {
                 using var streamReader = new StreamReader(ftrInputFileName);
@@ -70,7 +71,7 @@ internal class Program
                 Task.Run(cli.Run);
                 break;
             }
-            
+
             default:
                 throw new Exception("Invalid mode read from config file");
         }

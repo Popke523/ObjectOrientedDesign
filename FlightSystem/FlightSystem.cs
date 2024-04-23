@@ -8,9 +8,8 @@ namespace ObjectOrientedDesign.FlightSystem;
 
 public class FlightSystem(Logger.Logger logger)
 {
-    public readonly object FsLock = new();
-
     private readonly Logger.Logger _logger = logger;
+    public readonly object FsLock = new();
     [JsonIgnore] public readonly Dictionary<ulong, FlightSystemObject> ObjectIds = new();
 
     [JsonInclude] public List<Airport> Airports = [];
@@ -20,11 +19,8 @@ public class FlightSystem(Logger.Logger logger)
     [JsonInclude] public List<Flight> Flights = [];
     [JsonInclude] public List<PassengerPlane> PassengerPlanes = [];
     [JsonInclude] public List<Passenger> Passengers = [];
-    
-    [JsonIgnore] public IEnumerable<Person> People
-    {
-        get => Crew.Concat<Person>(Passengers);
-    }
+
+    [JsonIgnore] public IEnumerable<Person> People => Crew.Concat<Person>(Passengers);
 
     public void OnNewDataReady(object sender, NewDataReadyArgs args)
     {
@@ -72,14 +68,14 @@ public class FlightSystem(Logger.Logger logger)
 
                 if (!(takeoffTimeMs < currentTimeMs) || !(currentTimeMs < landingTimeMs)) continue;
 
-                var timeDiffMs = landingTimeMs - takeoffTimeMs;
-                (double x, double y) distance = (targetMercatorCoords.x - originMercatorCoords.x,
-                    targetMercatorCoords.y - originMercatorCoords.y);
-                var elapsedTime = currentTimeMs - takeoffTimeMs;
+                var timeDiffMs = landingTimeMs - currentTimeMs;
+                (double x, double y) distance = (targetMercatorCoords.x - currentMercatorCoords.x,
+                    targetMercatorCoords.y - currentMercatorCoords.y);
+                var elapsedTimeMs = 1000;
 
                 (double x, double y) newMercatorCoords = (
-                    elapsedTime / timeDiffMs * distance.x + originMercatorCoords.x,
-                    elapsedTime / timeDiffMs * distance.y + originMercatorCoords.y);
+                    elapsedTimeMs / timeDiffMs * distance.x + currentMercatorCoords.x,
+                    elapsedTimeMs / timeDiffMs * distance.y + currentMercatorCoords.y);
 
                 var position = SphericalMercator.ToLonLat(newMercatorCoords.x, newMercatorCoords.y);
 

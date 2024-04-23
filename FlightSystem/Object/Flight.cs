@@ -30,5 +30,4 @@ public class Flight : FlightSystemObject
     public Plane Plane { get; set; }
     public Crew[] Crew { get; set; }
     public ILoadable[] Load { get; set; }
-
 }
