@@ -91,7 +91,7 @@ public class FlightSystem(Logger.Logger logger)
     {
         var nss = (NetworkSourceSimulator.NetworkSourceSimulator)sender;
         var nsmr = new NetworkSourceMessageReader(_logger);
-        nsmr.UpdatePosition(this, args.ObjectID, args.Latitude, args.Longitude);
+        nsmr.UpdatePosition(this, args.ObjectID, args.Latitude, args.Longitude, args.AMSL);
     }
 
     public void OnContactInfoUpdate(object sender, ContactInfoUpdateArgs args)

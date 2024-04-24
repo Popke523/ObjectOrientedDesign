@@ -89,7 +89,12 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
         if (from == to) return;
         if (!flightSystem.ObjectIds.ContainsKey(from))
         {
-            _logger.Log($"Object with id ${to} already exists in the flight system!");
+            _logger.Log($"Object with id {from} does not exist in the flight system!");
+            return;
+        }
+        if (flightSystem.ObjectIds.ContainsKey(to))
+        {
+            _logger.Log($"Object with id {to} already exists in the flight system!");
             return;
         }
 
@@ -100,18 +105,19 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
         _logger.Log($"Changed object ID from {from} to {to}");
     }
 
-    public void UpdatePosition(FlightSystem flightSystem, ulong objectId, float latitude, float longitude)
+    public void UpdatePosition(FlightSystem flightSystem, ulong objectId, float latitude, float longitude,float amsl)
     {
         var flight = flightSystem.Flights.FirstOrDefault(x => x!.Id == objectId, null);
         if (flight is null)
         {
-            _logger.Log($"Flight with id ${objectId} does not exist in the flight system!");
+            _logger.Log($"Flight with id {objectId} does not exist in the flight system!");
             return;
         }
 
         flight.Latitude = latitude;
         flight.Longitude = longitude;
-        _logger.Log($"Position of flight with id ${objectId} updated to ({latitude}, {longitude})");
+        flight.AMSL = amsl;
+        _logger.Log($"Position of flight with id {objectId} updated to ({latitude}, {longitude}), amsl: {amsl}");
     }
 
     public void UpdateContactInfo(FlightSystem flightSystem, ulong objectId, string phoneNumber, string emailAddress)
@@ -119,7 +125,7 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
         var person = flightSystem.People.FirstOrDefault(x => x!.Id == objectId, null);
         if (person is null)
         {
-            _logger.Log($"Person with id ${objectId} does not exist in the flight system!");
+            _logger.Log($"Person with id {objectId} does not exist in the flight system!");
             return;
         }
 
