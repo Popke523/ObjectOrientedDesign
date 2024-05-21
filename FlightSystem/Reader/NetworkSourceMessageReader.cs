@@ -92,6 +92,7 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
             _logger.Log($"Object with id {from} does not exist in the flight system!");
             return;
         }
+
         if (flightSystem.ObjectIds.ContainsKey(to))
         {
             _logger.Log($"Object with id {to} already exists in the flight system!");
@@ -105,7 +106,7 @@ public class NetworkSourceMessageReader(Logger.Logger logger)
         _logger.Log($"Changed object ID from {from} to {to}");
     }
 
-    public void UpdatePosition(FlightSystem flightSystem, ulong objectId, float latitude, float longitude,float amsl)
+    public void UpdatePosition(FlightSystem flightSystem, ulong objectId, float latitude, float longitude, float amsl)
     {
         var flight = flightSystem.Flights.FirstOrDefault(x => x!.Id == objectId, null);
         if (flight is null)

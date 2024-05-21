@@ -1,6 +1,7 @@
 using System.Text.Json;
 using ObjectOrientedDesign.FlightSystem.News;
 using ObjectOrientedDesign.FlightSystem.News.Media;
+using ObjectOrientedDesign.FlightSystem.Query;
 
 namespace ObjectOrientedDesign.FlightSystem.NetworkSourceSimulatorCli;
 
@@ -16,7 +17,10 @@ public class NetworkSourceSimulatorCli(
     {
         var exit = 0;
         while (exit == 0)
-            switch (Console.ReadLine())
+        {
+            var command = Console.ReadLine();
+            if (command is null) continue;
+            switch (command)
             {
                 case "print":
                     Print();
@@ -27,7 +31,13 @@ public class NetworkSourceSimulatorCli(
                 case "exit":
                     exit = 1;
                     break;
+                default:
+                    var displayer = DisplayParser.Parse(command, flightSystem);
+                    displayer.Display();
+
+                    break;
             }
+        }
 
         Stop();
     }

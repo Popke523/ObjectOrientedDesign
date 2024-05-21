@@ -7,7 +7,6 @@ namespace ObjectOrientedDesign.FlightSystem.Reader;
 public class FtrDataReader(StreamReader streamReader, Logger.Logger logger)
 {
     private readonly List<string> _flightsStrings = [];
-    private readonly Logger.Logger _logger = logger;
     private StreamReader StreamReader { get; } = streamReader;
 
     public FlightSystem ToFlightSystem()
